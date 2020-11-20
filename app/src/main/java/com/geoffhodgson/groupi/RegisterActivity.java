@@ -19,6 +19,8 @@ import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.UserProfileChangeRequest;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 
 public class RegisterActivity extends AppCompatActivity {
 
@@ -75,13 +77,28 @@ public class RegisterActivity extends AppCompatActivity {
                                                     public void onComplete(@NonNull Task<Void> task) {
                                                         if (task.isSuccessful()) {
                                                             Log.d(TAG, "User profile updated.");
+                                                            FirebaseUser user = mAuth.getCurrentUser();
+                                                            FirebaseDatabase db  = FirebaseDatabase.getInstance();
+                                                            String path = String.format("users/%s/", user.getUid());
+                                                            DatabaseReference userRef = db.getReference(path+"name");
+                                                            DatabaseReference emailRef = db.getReference(path+"email");
+                                                            DatabaseReference friendsRef = db.getReference(path+"friends/");
+                                                            DatabaseReference activeRef = db.getReference(path+"active");
+                                                            DatabaseReference verifiedRef = db.getReference(path+"verified");
+
+                                                            userRef.setValue(user.getDisplayName());
+                                                            emailRef.setValue(user.getEmail());
+                                                            activeRef.setValue(true);
+                                                            verifiedRef.setValue(false);
+                                                            friendsRef.setValue(null);
+                                                            db.getReference("/usernames/"+user.getDisplayName()).setValue(user.getUid());
                                                             finish();
                                                         }
                                                     }
                                                 });
                                     } else {
                                         // If sign in fails, display a message to the user.
-                                        Log.w(TAG, "createUserWithEmail:fai lure", task.getException());
+                                        Log.w(TAG, "createUserWithEmail:failure", task.getException());
                                         Toast.makeText(getApplicationContext(), "Authentication failed.",
                                                 Toast.LENGTH_SHORT).show();
                                         showError(task.getException().getMessage());

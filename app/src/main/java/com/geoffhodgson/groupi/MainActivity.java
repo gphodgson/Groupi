@@ -203,6 +203,10 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                 Intent loginIntent = new Intent(getApplicationContext(), LoginActivity.class);
                 startActivity(loginIntent);
                 break;
+            case R.id.profile:
+                Intent profileIntent = new Intent(getApplicationContext(), ProfileActivity.class);
+                startActivity(profileIntent);
+                break;
             case R.id.logout:
                 FirebaseAuth.getInstance().signOut();
                 updateUI();
